@@ -51,7 +51,8 @@ const feed: FeedReel[] = (() => {
     wide?: boolean,
     folder = industry,
   ) => {
-    const id = `${industry}/${slug}`;
+    // Keyed by the file, so a film shown under several tabs is listed once.
+    const id = `${folder}/${slug}`;
     if (seen.has(id)) return;
     seen.add(id);
     items.push({

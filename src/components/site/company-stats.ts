@@ -1,9 +1,12 @@
 import { clientLogos } from "./client-logos";
-import { reelIndustries } from "./reels";
+import { reelIndustries, reelKey } from "./reels";
 
 export type Stat = { value: number; prefix?: string; suffix: string; label: string };
 
-export const filmsMade = reelIndustries.reduce((sum, industry) => sum + industry.reels.length, 0);
+// Each film once, even when it shows under several MediaHouse tabs.
+export const filmsMade = new Set(
+  reelIndustries.flatMap((industry) => industry.reels.map((reel) => reelKey(industry.id, reel))),
+).size;
 
 // Real figures only. Add a stat here as soon as a number is confirmed.
 export const companyStats: Stat[] = [

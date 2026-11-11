@@ -39,6 +39,36 @@ const byLength = (reels: (Reel & { seconds: number })[]): Reel[] =>
 const inFolder = (folder: string, reels: Reel[]): Reel[] =>
   reels.map((reel) => ({ ...reel, folder }));
 
+/**
+ * The file a reel plays: its R2 folder and slug. A reel shown under several
+ * tabs has the same key in each, so it is counted (and listed) only once.
+ */
+export const reelKey = (industryId: string, reel: Reel) =>
+  `${reel.folder ?? industryId}/${reel.slug}`;
+
+// The AI character films, uploaded to the R2 folder "ai-videos". Each one also
+// shows under the tabs its business fits (Traders, Product, Cinematic, Education).
+const aiCharacterReels = inFolder("ai-videos", [
+  { slug: "omaxe-plot-walk", title: "Omaxe City — The talking plot" },
+  { slug: "ojas-cartoon", title: "Ojas Marketing — Interior hardware" },
+  { slug: "sh-infratech-main-plot-hoon", title: "SH Infratech — Main plot hoon" },
+  { slug: "shree-ram-door-handle-army", title: "Shree Ram — The door handle army" },
+  { slug: "alphy-01", title: "Alphy — Smart Science" },
+  { slug: "vertex-remake", title: "Vertex Real Estate — Indore" },
+  { slug: "shree-sai-plywood-01", title: "Shree Sai Plywood — Walls to wardrobes" },
+  { slug: "sh-infratech-04", title: "SH Infratech — Tapobhumi" },
+  { slug: "tulsi-sapphire-waterproof", title: "Tulsi Traders — Sapphire waterproof" },
+  { slug: "shree-sai-plywood-03", title: "Shree Sai Plywood — Panels for every room" },
+  { slug: "tulsi-05-ai", title: "Tulsi Traders — Empire Tulsi, new stock" },
+  { slug: "shree-sai-plywood-02", title: "Shree Sai Plywood — Premium wall panels" },
+  { slug: "tulsi-sapphire-01", title: "Tulsi Traders — Sapphire, new stock" },
+  { slug: "tulsi-website-banner", title: "Tulsi Traders — Website banner", wide: true },
+]);
+
+/** AI character films by slug, in the order given. */
+const aiFilms = (...slugs: string[]): Reel[] =>
+  slugs.flatMap((slug) => aiCharacterReels.filter((reel) => reel.slug === slug));
+
 export const reelIndustries: ReelIndustry[] = [
   {
     id: "real-estate",
@@ -112,23 +142,7 @@ export const reelIndustries: ReelIndustry[] = [
   {
     id: "ai-character",
     label: "AI Character Videos",
-    // These were uploaded to the R2 folder "ai-videos", not "ai-character".
-    reels: inFolder("ai-videos", [
-      { slug: "omaxe-plot-walk", title: "Omaxe City — The talking plot" },
-      { slug: "ojas-cartoon", title: "Ojas Marketing — Interior hardware" },
-      { slug: "sh-infratech-main-plot-hoon", title: "SH Infratech — Main plot hoon" },
-      { slug: "shree-ram-door-handle-army", title: "Shree Ram — The door handle army" },
-      { slug: "alphy-01", title: "Alphy — Smart Science" },
-      { slug: "vertex-remake", title: "Vertex Real Estate — Indore" },
-      { slug: "shree-sai-plywood-01", title: "Shree Sai Plywood — Walls to wardrobes" },
-      { slug: "sh-infratech-04", title: "SH Infratech — Tapobhumi" },
-      { slug: "tulsi-sapphire-waterproof", title: "Tulsi Traders — Sapphire waterproof" },
-      { slug: "shree-sai-plywood-03", title: "Shree Sai Plywood — Panels for every room" },
-      { slug: "tulsi-05-ai", title: "Tulsi Traders — Empire Tulsi, new stock" },
-      { slug: "shree-sai-plywood-02", title: "Shree Sai Plywood — Premium wall panels" },
-      { slug: "tulsi-sapphire-01", title: "Tulsi Traders — Sapphire, new stock" },
-      { slug: "tulsi-website-banner", title: "Tulsi Traders — Website banner", wide: true },
-    ]),
+    reels: aiCharacterReels,
   },
   {
     id: "fitness",
@@ -141,14 +155,49 @@ export const reelIndustries: ReelIndustry[] = [
       { slug: "sehat-sutra-opening", title: "Sehat Sutra — Centre opening" },
     ]),
   },
+  {
+    // Plywood, hardware and building-material dealers.
+    id: "traders",
+    label: "Traders",
+    reels: aiFilms(
+      "tulsi-website-banner",
+      "tulsi-sapphire-waterproof",
+      "ojas-cartoon",
+      "shree-ram-door-handle-army",
+      "shree-sai-plywood-01",
+      "tulsi-05-ai",
+      "shree-sai-plywood-03",
+      "tulsi-sapphire-01",
+      "shree-sai-plywood-02",
+    ),
+  },
+  {
+    // Films that sell one product.
+    id: "product",
+    label: "Product",
+    reels: aiFilms(
+      "tulsi-website-banner",
+      "tulsi-sapphire-waterproof",
+      "ojas-cartoon",
+      "shree-ram-door-handle-army",
+      "shree-sai-plywood-02",
+      "alphy-01",
+    ),
+  },
+  {
+    id: "cinematic",
+    label: "Cinematic",
+    reels: aiFilms("tulsi-website-banner", "shree-ram-door-handle-army", "sh-infratech-04"),
+  },
+  {
+    id: "education",
+    label: "Education",
+    reels: aiFilms("alphy-01"),
+  },
   // Coming soon: add each one's reels as its R2 folder (named after `id`) is uploaded.
   { id: "clothing", label: "Clothing", reels: [] },
   { id: "fmcg", label: "FMCG", reels: [] },
-  { id: "education", label: "Education", reels: [] },
-  { id: "cinematic", label: "Cinematic", reels: [] },
   { id: "beauty", label: "Beauty Brands", reels: [] },
-  { id: "traders", label: "Traders", reels: [] },
-  { id: "product", label: "Product", reels: [] },
 ];
 
 /**
