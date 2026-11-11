@@ -35,6 +35,10 @@ const PLOTTING_MIN_SECONDS = 60;
 const byLength = (reels: (Reel & { seconds: number })[]): Reel[] =>
   reels.map((reel) => ({ ...reel, kind: reel.seconds > PLOTTING_MIN_SECONDS ? "plotting" : "ad" }));
 
+// For an industry whose files sit in an R2 folder named differently from its `id`.
+const inFolder = (folder: string, reels: Reel[]): Reel[] =>
+  reels.map((reel) => ({ ...reel, folder }));
+
 export const reelIndustries: ReelIndustry[] = [
   {
     id: "real-estate",
@@ -105,16 +109,46 @@ export const reelIndustries: ReelIndustry[] = [
       { slug: "documentary-02", title: "Redwood Biotech — Story" },
     ],
   },
+  {
+    id: "ai-character",
+    label: "AI Character Videos",
+    // These were uploaded to the R2 folder "ai-videos", not "ai-character".
+    reels: inFolder("ai-videos", [
+      { slug: "omaxe-plot-walk", title: "Omaxe City — The talking plot" },
+      { slug: "ojas-cartoon", title: "Ojas Marketing — Interior hardware" },
+      { slug: "sh-infratech-main-plot-hoon", title: "SH Infratech — Main plot hoon" },
+      { slug: "shree-ram-door-handle-army", title: "Shree Ram — The door handle army" },
+      { slug: "alphy-01", title: "Alphy — Smart Science" },
+      { slug: "vertex-remake", title: "Vertex Real Estate — Indore" },
+      { slug: "shree-sai-plywood-01", title: "Shree Sai Plywood — Walls to wardrobes" },
+      { slug: "sh-infratech-04", title: "SH Infratech — Tapobhumi" },
+      { slug: "tulsi-sapphire-waterproof", title: "Tulsi Traders — Sapphire waterproof" },
+      { slug: "shree-sai-plywood-03", title: "Shree Sai Plywood — Panels for every room" },
+      { slug: "tulsi-05-ai", title: "Tulsi Traders — Empire Tulsi, new stock" },
+      { slug: "shree-sai-plywood-02", title: "Shree Sai Plywood — Premium wall panels" },
+      { slug: "tulsi-sapphire-01", title: "Tulsi Traders — Sapphire, new stock" },
+      { slug: "tulsi-website-banner", title: "Tulsi Traders — Website banner", wide: true },
+    ]),
+  },
+  {
+    id: "fitness",
+    label: "Fitness",
+    // Uploaded to the R2 folder "fitness-health".
+    reels: inFolder("fitness-health", [
+      { slug: "sehat-sutra-mascot", title: "Sehat Sutra — The wellness mascot" },
+      { slug: "midas-physiocare", title: "Midas Physiocare — Joint, spine & slimming" },
+      { slug: "sehat-sutra-welcome", title: "Sehat Sutra — Grand welcome" },
+      { slug: "sehat-sutra-opening", title: "Sehat Sutra — Centre opening" },
+    ]),
+  },
   // Coming soon: add each one's reels as its R2 folder (named after `id`) is uploaded.
   { id: "clothing", label: "Clothing", reels: [] },
   { id: "fmcg", label: "FMCG", reels: [] },
-  { id: "ai-character", label: "AI Character Videos", reels: [] },
   { id: "education", label: "Education", reels: [] },
   { id: "cinematic", label: "Cinematic", reels: [] },
   { id: "beauty", label: "Beauty Brands", reels: [] },
   { id: "traders", label: "Traders", reels: [] },
   { id: "product", label: "Product", reels: [] },
-  { id: "fitness", label: "Fitness", reels: [] },
 ];
 
 /**
@@ -141,7 +175,7 @@ export const featuredReels: Reel[] = featuredPicks.flatMap(([industryId, slug]) 
   const reel = reelIndustries
     .find((industry) => industry.id === industryId)
     ?.reels.find((item) => item.slug === slug);
-  return reel ? [{ ...reel, folder: industryId }] : [];
+  return reel ? [{ ...reel, folder: reel.folder ?? industryId }] : [];
 });
 
 export const reelUrls = (industry: string, slug: string) => {

@@ -44,7 +44,13 @@ const industryLabel = (id: string) =>
 const feed: FeedReel[] = (() => {
   const seen = new Set<string>();
   const items: FeedReel[] = [];
-  const add = (industry: string, slug: string, title: string, wide?: boolean) => {
+  const add = (
+    industry: string,
+    slug: string,
+    title: string,
+    wide?: boolean,
+    folder = industry,
+  ) => {
     const id = `${industry}/${slug}`;
     if (seen.has(id)) return;
     seen.add(id);
@@ -54,12 +60,14 @@ const feed: FeedReel[] = (() => {
       industryLabel: industryLabel(industry),
       title,
       wide: wide ?? false,
-      urls: reelUrls(industry, slug),
+      urls: reelUrls(folder, slug),
     });
   };
   featuredReels.forEach((reel) => add(reel.folder ?? "", reel.slug, reel.title, reel.wide));
   reelIndustries.forEach((industry) =>
-    industry.reels.forEach((reel) => add(industry.id, reel.slug, reel.title, reel.wide)),
+    industry.reels.forEach((reel) =>
+      add(industry.id, reel.slug, reel.title, reel.wide, reel.folder ?? industry.id),
+    ),
   );
   // Vertical reels first (they fill the screen); landscape films close the feed.
   return [...items.filter((reel) => !reel.wide), ...items.filter((reel) => reel.wide)];
